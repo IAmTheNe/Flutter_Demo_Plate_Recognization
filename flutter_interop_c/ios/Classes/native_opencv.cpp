@@ -52,9 +52,41 @@ extern "C" {
         findContours(edged.clone(), contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
 
         Mat input1 = input.clone();
-        drawContours(input1, contours, -1, cv::Scalar(0, 255, 0), 3);
+        drawContours(input1, contours, -1, Scalar(0, 255, 0), 3);
 
-        imwrite(outputImagePath, input1);
+        sort(contours.begin(), contours.end(), [](const vector<Point>& c1, const vector<Point>& c2) {
+            return cv::contourArea(c1) > cv::contourArea(c2);
+        });
+        vector<vector<Point>> cnts(contours.begin(), contours.begin() + 30);
+
+        Mat input2 = input.clone();
+        drawContours(input2, cnts, -1, Scalar(0, 255, 0), 3);
+        
+       
+        int i = 7;
+        Point2f screenCnt[4];
+        for (size_t idx = 0; idx < cnts.size(); idx++) {
+            double perimeter = arcLength(cnts[idx], true);
+            double epsilon = 0.018 * perimeter;
+            vector<Point> approx;
+            approxPolyDP(cnts[idx], approx, epsilon, true);
+
+            if (approx.size() == 4) {
+                for (int j = 0; j < 4; j++) {
+                    screenCnt[j] = approx[j];
+                }
+
+                Rect b = boundingRect(cnts[idx]);
+                Mat new_img = input(b);
+                imwrite(outputImagePath, new_img);
+
+                i++;
+                break;
+            }
+        }
+
+       drawContours(input, vector<vector<Point>>{vector<Point>(screenCnt, screenCnt + 4)}, -1, Scalar(0, 255, 0), 3);
+
      }
 }
 
