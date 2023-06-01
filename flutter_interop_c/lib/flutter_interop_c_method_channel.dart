@@ -14,6 +14,10 @@ class MethodChannelFlutterInteropC extends FlutterInteropCPlatform {
   @visibleForTesting
   final methodChannel = const MethodChannel('flutter_interop_c');
 
+  final nativeLib = Platform.isAndroid
+      ? DynamicLibrary.open('libNative.so')
+      : DynamicLibrary.process();
+
   @override
   Future<String?> getPlatformVersion() async {
     final version =
@@ -22,12 +26,16 @@ class MethodChannelFlutterInteropC extends FlutterInteropCPlatform {
   }
 
   @override
-  Future<String> get versionOpenCV async {
-    final nativeLib = Platform.isAndroid
-        ? DynamicLibrary.open('libNative.so')
-        : DynamicLibrary.process();
-
-    final version = nativeLib.lookupFunction<TypeInC, TypeInDart>('version');
+  Future<String> get getOpenCvVersion async {
+    final version =
+        nativeLib.lookupFunction<VersionFuncInC, VersionFuncInDart>('version');
     return version().toDartString();
+  }
+
+  @override
+  void imageProcess((String, String) path) {
+    final process = nativeLib
+        .lookupFunction<ImageProcessInC, ImageProcessInDart>('process_image');
+    process(path.$1.toNativeUtf8(), path.$2.toNativeUtf8());
   }
 }

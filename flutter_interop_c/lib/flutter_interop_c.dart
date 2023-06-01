@@ -6,5 +6,8 @@ class FlutterInteropC {
   }
 
   Future<String> get versionOpenCV =>
-      FlutterInteropCPlatform.instance.versionOpenCV;
+      FlutterInteropCPlatform.instance.getOpenCvVersion;
+
+  void imageProcess((String, String) path) =>
+      FlutterInteropCPlatform.instance.imageProcess(path);
 }

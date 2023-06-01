@@ -27,7 +27,11 @@ abstract class FlutterInteropCPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
-  Future<String> get versionOpenCV {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+  Future<String> get getOpenCvVersion {
+    throw UnimplementedError('openCvVersion() has not been implemented.');
+  }
+
+  void imageProcess((String, String) path) {
+    throw UnimplementedError('imageProcess() has not been implemented.');
   }
 }

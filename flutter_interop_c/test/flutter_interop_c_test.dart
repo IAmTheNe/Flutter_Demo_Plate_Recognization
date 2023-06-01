@@ -9,9 +9,9 @@ class MockFlutterInteropCPlatform
     implements FlutterInteropCPlatform {
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
-  
+
   @override
-  Future<String> get versionOpenCV => throw UnimplementedError();
+  Future<String> get getOpenCvVersion => throw UnimplementedError();
 }
 
 void main() {
