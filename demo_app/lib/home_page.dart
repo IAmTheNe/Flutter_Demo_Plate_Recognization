@@ -5,6 +5,7 @@ import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_interop_c/flutter_interop_c.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -22,6 +23,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _isProcessed = false;
   bool _isWorking = false;
+
+  final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+
+  String? _text;
 
   Future<String?> pickAnImage() async {
     return _picker
@@ -70,7 +75,15 @@ class _MyHomePageState extends State<MyHomePage> {
         _isProcessed = true;
         _isWorking = false;
       });
+
+      final text = await textRecognizer
+          .processImage(InputImage.fromFile(File(tempPath)));
+      setState(() {
+        _text = text.text;
+      });
     });
+
+    // final text = await FirebaseMLApi.recogniseText(File(tempPath));
   }
 
   @override
@@ -104,24 +117,21 @@ class _MyHomePageState extends State<MyHomePage> {
                           );
                         }),
                   ),
-                Column(
-                  children: [
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            onPressed: takeAndProcessImage,
-                            child: const Text('Upload Image'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {},
-                            child: const Text('Get OpenCV Version'),
-                          ),
-                        ],
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(_text ?? ''),
+                      ElevatedButton(
+                        onPressed: takeAndProcessImage,
+                        child: const Text('Upload Image'),
                       ),
-                    ),
-                  ],
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text('Get OpenCV Version'),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
